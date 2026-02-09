@@ -1,0 +1,41 @@
+---
+const currentPath = Astro.url.pathname;
+const isHome = currentPath === "/";
+const isProbleme = currentPath.startsWith("/probleme");
+---
+
+<header class="bg-base-100 border-b border-base-300">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2">
+      <img src="/favicon.svg" alt="" class="h-8 w-8" />
+      <span class="font-bold text-primary sm:text-primary text-sm sm:text-base uppercase"
+        >Sichere Schulwege <span class="max-sm:sr-only">Wilhelmsburg</span
+        ></span
+      >
+    </a>
+    <nav aria-label="Hauptnavigation" class="flex gap-3 sm:gap-1 font-heading font-bold uppercase">
+      <a
+        href="/"
+        aria-current={isHome ? "page" : undefined}
+        class:list={[
+          "sm:px-3 py-2 rounded-md text-base transition-colors",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+          isHome
+            ? "text-primary"
+            : "text-base-content/80 hover:bg-base-200",
+        ]}>Start</a
+      >
+      <a
+        href="/probleme"
+        aria-current={isProbleme ? "page" : undefined}
+        class:list={[
+          "sm:px-3 py-2 rounded-md text-base transition-colors",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+          isProbleme
+            ? "text-primary"
+            : "text-base-content/80 hover:bg-base-200",
+        ]}>Probleme</a
+      >
+    </nav>
+  </div>
+</header>

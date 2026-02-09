@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProblemCard from '../../components/ProblemCard.astro';
+import FloatingReportButton from '../../components/FloatingReportButton.astro';
+import ProblemReportModal from '../../components/ProblemReportModal.tsx';
+import { getApprovedProblems } from '../../lib/db';
+
+const problems = getApprovedProblems();
+---
+<BaseLayout title="Die größten Probleme – Sichere Schulwege Wilhelmsburg">
+  <section class="py-12 md:py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">Die größten Probleme</h1>
+      <p class="text-lg text-base-content/80 mb-10 max-w-3xl">
+        Diese Gefahrenstellen haben wir identifiziert. Du kannst sie kommentieren oder selbst eine neue melden.
+      </p>
+
+      {problems.length === 0 ? (
+        <div class="text-center py-16">
+          <p class="text-xl text-base-content/70 mb-4">
+            Noch keine Probleme veröffentlicht.
+          </p>
+          <a href="/probleme/melden" class="btn btn-primary">
+            Melde das erste Problem!
+          </a>
+        </div>
+      ) : (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {problems.map((problem) => (
+            <ProblemCard
+              id={problem.id}
+              title={problem.title}
+              description={problem.description}
+              location_name={problem.location_name}
+              image_url={problem.image_url}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <ProblemReportModal client:idle />
+  <FloatingReportButton />
+
+  <script>
+    document.getElementById('open-report-modal')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if ((window as any).__openReportModal) {
+        (window as any).__openReportModal();
+      } else {
+        window.location.href = '/probleme/melden';
+      }
+    });
+  </script>
+</BaseLayout>

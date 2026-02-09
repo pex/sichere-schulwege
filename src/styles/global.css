@@ -1,0 +1,124 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: false;
+}
+
+/* Open Sans – regular variable font */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/open-sans-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/open-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Open Sans Condensed – bold only */
+@font-face {
+  font-family: 'Open Sans Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/open-sans-condensed-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Open Sans Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/open-sans-condensed-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@theme {
+  --font-sans: 'Open Sans', system-ui, sans-serif;
+  --font-heading: 'Open Sans Condensed', 'Open Sans', system-ui, sans-serif;
+
+  --color-primary: #004E8A;
+  --color-primary-content: #ffffff;
+  --color-secondary: #2E9E48;
+  --color-secondary-content: #ffffff;
+  --color-accent: #E8A317;
+  --color-accent-content: #1A1A1A;
+  --color-neutral: #1A1A1A;
+  --color-neutral-content: #ffffff;
+  --color-base-100: #ffffff;
+  --color-base-200: #F2F7FB;
+  --color-base-300: #EAF4FB;
+  --color-base-content: #1A1A1A;
+  --color-info: #3B82F6;
+  --color-success: #2E9E48;
+  --color-warning: #E8A317;
+  --color-error: #DC2626;
+}
+
+/* Headings: Condensed Bold Uppercase */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* All .btn: Condensed Bold Uppercase */
+.btn {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* White button variant for use on colored backgrounds */
+.btn.btn-white {
+  background-color: white;
+  border-color: white;
+  color: var(--color-primary);
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.85);
+  }
+}
+.bg-secondary .btn.btn-white {
+  color: var(--color-secondary);
+}
+
+/* Text-style navigation link with arrow animation */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+.link-arrow .arrow {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.link-arrow:hover .label,
+.group:hover .link-arrow .link-text {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: var(--color-primary);
+}
+.link-arrow:hover .arrow-right,
+.group:hover .link-arrow .arrow-right {
+  transform: translateX(4px);
+}
+.link-arrow:hover .arrow-left,
+.group:hover .link-arrow .arrow-left {
+  transform: translateX(-4px);
+}

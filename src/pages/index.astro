@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import PartnerLogos from '../components/PartnerLogos.astro';
+import SignalCTA from '../components/SignalCTA.astro';
+import BeforeAfterSlider from '../components/BeforeAfterSlider.tsx';
+---
+<BaseLayout title="Sichere Schulwege Wilhelmsburg – Elterninitiative">
+  <Hero />
+
+  {/* Einleitung */}
+  <section class="py-12 md:py-16">
+    <div class="max-w-3xl mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-bold mb-6">Die Initiative</h2>
+      <p class="text-lg leading-relaxed text-base-content/80">
+        Wir wollen sichere Schulwege in Wilhelmsburg! Unser Fokus liegt dabei auf der Elbinselschule mit ihren Standorten Rahmwerder und Krieterstraße. Unser Ziel ist klar: Kinder müssen die Möglichkeit haben, selbstständig und gefahrlos zur Schule zu kommen – egal ob zu Fuß, mit dem Fahrrad oder dem Bus. Doch die Realität sieht anders aus; zahlreiche Mängel machen dies aktuell unmöglich, ohne dass wir Eltern uns Sorgen machen müssen. Wir werden diese Probleme konkret benennen und Verbesserungsvorschläge vorstellen. Sei dabei und unterstütze uns!
+      </p>
+    </div>
+  </section>
+
+  <PartnerLogos />
+
+  <SignalCTA />
+
+  {/* Vorher/Nachher */}
+  <section class="py-12 md:py-16">
+    <div class="max-w-3xl mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">
+        So sieht es gerade aus – so könnte es aussehen.
+      </h2>
+      <BeforeAfterSlider
+        client:visible
+        beforeImage="/images/before-placeholder.svg"
+        afterImage="/images/after-placeholder.svg"
+      />
+      <div class="text-center mt-8">
+        <a href="/probleme" class="btn btn-primary btn-lg">
+          Alle Probleme ansehen &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

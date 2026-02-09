@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProblemReportModal from '../../components/ProblemReportModal.tsx';
+---
+<BaseLayout title="Problem melden – Sichere Schulwege Wilhelmsburg">
+  <section class="py-12 md:py-16">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">Problem melden</h1>
+      <p class="text-lg text-base-content/70 mb-8">
+        Du kennst eine Gefahrenstelle auf dem Schulweg? Melde sie uns!
+      </p>
+      <noscript>
+        <div class="alert alert-warning max-w-md mx-auto">
+          <span>Für das Meldeformular wird JavaScript benötigt. Bitte aktiviere JavaScript in deinem Browser.</span>
+        </div>
+      </noscript>
+    </div>
+  </section>
+  <ProblemReportModal client:load open={true} />
+</BaseLayout>

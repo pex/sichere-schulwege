@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BeforeAfterSlider from '../../components/BeforeAfterSlider.tsx';
+import CommentSection from '../../components/CommentSection.tsx';
+import { getProblemById, getApprovedComments } from '../../lib/db';
+
+const { id } = Astro.params;
+const problem = getProblemById(Number(id));
+
+if (!problem) {
+  return Astro.redirect('/probleme');
+}
+
+const comments = getApprovedComments(problem.id);
+const osmUrl = `https://www.openstreetmap.org/?mlat=${problem.latitude}&mlon=${problem.longitude}#map=17/${problem.latitude}/${problem.longitude}`;
+---
+<BaseLayout title={`${problem.title} – Sichere Schulwege Wilhelmsburg`}>
+  <article class="py-12 md:py-16">
+    <div class="max-w-3xl mx-auto px-4">
+      <a href="/probleme" class="link-arrow mb-6"><span class="arrow arrow-left">&larr;</span> <span class="link-text">Zurück zur Übersicht</span></a>
+
+      <h1 class="text-3xl md:text-4xl font-bold mb-4">{problem.title}</h1>
+
+      <div class="flex items-center gap-2 text-base-content/70 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+        <span>{problem.location_name}</span>
+        {problem.latitude !== 0 && problem.longitude !== 0 && (
+          <a href={osmUrl} target="_blank" rel="noopener noreferrer" class="link link-primary text-sm">
+            Auf Karte anzeigen
+          </a>
+        )}
+      </div>
+
+      {problem.image_url && (
+        <img
+          src={problem.image_url}
+          alt={problem.title}
+          class="w-full rounded-lg mb-8"
+          loading="lazy"
+        />
+      )}
+
+      <div class="prose prose-lg max-w-none mb-8">
+        <p>{problem.description}</p>
+      </div>
+
+      {problem.vision_image_url && (
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold mb-4">Vorher / Nachher</h2>
+          <BeforeAfterSlider
+            client:visible
+            beforeImage={problem.image_url || '/images/before-placeholder.svg'}
+            afterImage={problem.vision_image_url}
+          />
+        </div>
+      )}
+
+      <CommentSection
+        client:visible
+        problemId={problem.id}
+        initialComments={comments.map(c => ({
+          id: c.id,
+          name: c.name,
+          comment: c.comment,
+          created_at: c.created_at,
+        }))}
+      />
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,22 @@
+<section class="py-12 md:py-16">
+  <div class="max-w-6xl mx-auto px-4">
+    <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Partner</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="rounded-lg aspect-3/2 flex items-center justify-center p-4" style="background-color: #42A62A;">
+        <img src="/images/partner-gruene.jpg" alt="Bündnis 90/Die Grünen" class="max-h-full max-w-full object-contain" />
+      </div>
+      <div class="bg-white rounded-lg aspect-3/2 flex items-center justify-center border border-base-300 p-4">
+        <img src="/images/partner-elbinselschule.webp" alt="Elbinselschule" class="max-h-full max-w-full object-contain" />
+      </div>
+      {
+        [3, 4].map((i) => (
+          <div class="bg-base-200 rounded-lg aspect-3/2 flex items-center justify-center border border-base-300">
+            <span class="text-base-content/70 font-medium text-sm">
+              Partner-Logo {i}
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

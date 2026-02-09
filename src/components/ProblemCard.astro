@@ -1,0 +1,35 @@
+---
+interface Props {
+  id: number;
+  title: string;
+  description: string;
+  location_name: string;
+  image_url: string | null;
+}
+
+const { id, title, description, location_name, image_url } = Astro.props;
+
+const truncated = description.length > 150
+  ? description.slice(0, 150).trimEnd() + '…'
+  : description;
+---
+<a href={`/probleme/${id}`} class="group block bg-base-200 rounded-lg overflow-hidden hover:bg-base-300 transition-colors">
+  <img
+    src={image_url || '/images/placeholder.svg'}
+    alt={title}
+    class="w-full h-48 object-cover"
+    loading="lazy"
+  />
+  <div class="p-5">
+    <h3 class="text-lg font-bold mb-2 text-primary">{title}</h3>
+    <p class="text-sm text-base-content/80 mb-3">{truncated}</p>
+    <div class="flex items-center gap-1 text-sm text-base-content/70 mb-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+        <circle cx="12" cy="10" r="3" />
+      </svg>
+      <span>{location_name}</span>
+    </div>
+    <span class="link-arrow"><span class="link-text">Mehr lesen</span> <span class="arrow arrow-right">&rarr;</span></span>
+  </div>
+</a>
