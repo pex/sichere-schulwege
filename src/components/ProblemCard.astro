@@ -4,10 +4,10 @@ interface Props {
   title: string;
   description: string;
   location_name: string;
-  image_url: string | null;
+  image_id: number | null;
 }
 
-const { id, title, description, location_name, image_url } = Astro.props;
+const { id, title, description, location_name, image_id } = Astro.props;
 
 const truncated = description.length > 150
   ? description.slice(0, 150).trimEnd() + '…'
@@ -15,7 +15,7 @@ const truncated = description.length > 150
 ---
 <a href={`/probleme/${id}`} class="group block bg-base-200 rounded-lg overflow-hidden hover:bg-base-300 transition-colors">
   <img
-    src={image_url || '/images/placeholder.svg'}
+    src={image_id ? `/api/images/${image_id}?w=400&h=384&f=webp` : '/images/placeholder.svg'}
     alt={title}
     class="w-full h-48 object-cover"
     loading="lazy"

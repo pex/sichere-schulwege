@@ -1,5 +1,8 @@
 import Database from 'better-sqlite3';
+import sharp from 'sharp';
 import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 const dbPath = path.join(process.cwd(), 'data.db');
 const db = new Database(dbPath);
@@ -8,6 +11,17 @@ db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    data BLOB NOT NULL,
+    mime_type TEXT NOT NULL,
+    filename TEXT,
+    width INTEGER,
+    height INTEGER,
+    size INTEGER,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+
   CREATE TABLE IF NOT EXISTS problems (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -15,8 +29,8 @@ db.exec(`
     location_name TEXT NOT NULL,
     latitude REAL NOT NULL,
     longitude REAL NOT NULL,
-    image_url TEXT,
-    vision_image_url TEXT,
+    image_id INTEGER REFERENCES images(id),
+    vision_image_id INTEGER REFERENCES images(id),
     is_approved INTEGER DEFAULT 0,
     is_featured INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now'))
@@ -33,41 +47,46 @@ db.exec(`
   );
 `);
 
-function seedProblems() {
-  const count = db.prepare('SELECT COUNT(*) as count FROM problems').get() as { count: number };
-  if (count.count > 0) return;
+// --- Image helpers ---
 
-  const insert = db.prepare(`
-    INSERT INTO problems (title, description, location_name, latitude, longitude, is_approved)
-    VALUES (?, ?, ?, ?, ?, 1)
-  `);
-
-  insert.run(
-    'Fehlender Zebrastreifen Krieterstraße',
-    'An der Kreuzung Krieterstraße / Rotenhäuser Straße fehlt ein gesicherter Übergang. Kinder müssen die stark befahrene Straße ohne jede Querungshilfe überqueren.',
-    'Kreuzung Krieterstraße / Rotenhäuser Straße',
-    53.4922,
-    10.0132
-  );
-
-  insert.run(
-    'Zugeparkter Gehweg Rahmwerder Straße',
-    'Regelmäßig parken Autos auf dem Gehweg vor der Schule. Kinder mit Ranzen müssen auf die Fahrbahn ausweichen.',
-    'Rahmwerder Straße, Höhe Elbinselschule',
-    53.4935,
-    10.0078
-  );
-
-  insert.run(
-    'Unübersichtliche Bushaltestelle Veringstraße',
-    'Die Bushaltestelle ist schlecht beleuchtet und hat keinen sicheren Zugang vom Gehweg. Besonders im Winter ist die Situation gefährlich.',
-    'Bushaltestelle Veringstraße',
-    53.4912,
-    9.9989
-  );
+export interface Image {
+  id: number;
+  data: Buffer;
+  mime_type: string;
+  filename: string | null;
+  width: number | null;
+  height: number | null;
+  size: number;
+  created_at: string;
 }
 
-seedProblems();
+export function insertImage(data: Buffer, mimeType: string, filename?: string): number {
+  const meta = sharp(data).metadata();
+  // sharp.metadata() is async but we need sync — use sharp's internal sync approach
+  // For seed data we'll pass width/height manually; for runtime we pre-compute
+  const stmt = db.prepare(`
+    INSERT INTO images (data, mime_type, filename, size)
+    VALUES (?, ?, ?, ?)
+  `);
+  const result = stmt.run(data, mimeType, filename || null, data.length);
+  return result.lastInsertRowid as number;
+}
+
+export async function insertImageAsync(data: Buffer, mimeType: string, filename?: string): Promise<number> {
+  const meta = await sharp(data).metadata();
+  const stmt = db.prepare(`
+    INSERT INTO images (data, mime_type, filename, width, height, size)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
+  const result = stmt.run(data, mimeType, filename || null, meta.width || null, meta.height || null, data.length);
+  return result.lastInsertRowid as number;
+}
+
+export function getImageById(id: number): Image | undefined {
+  return db.prepare('SELECT * FROM images WHERE id = ?').get(id) as Image | undefined;
+}
+
+// --- Problem types & queries ---
 
 export interface Problem {
   id: number;
@@ -76,8 +95,8 @@ export interface Problem {
   location_name: string;
   latitude: number;
   longitude: number;
-  image_url: string | null;
-  vision_image_url: string | null;
+  image_id: number | null;
+  vision_image_id: number | null;
   is_approved: number;
   is_featured: number;
   created_at: string;
@@ -107,10 +126,10 @@ export function createProblem(data: {
   location_name: string;
   latitude: number;
   longitude: number;
-  image_url?: string;
+  image_id?: number;
 }) {
   const stmt = db.prepare(`
-    INSERT INTO problems (title, description, location_name, latitude, longitude, image_url)
+    INSERT INTO problems (title, description, location_name, latitude, longitude, image_id)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
   return stmt.run(
@@ -119,7 +138,7 @@ export function createProblem(data: {
     data.location_name,
     data.latitude,
     data.longitude,
-    data.image_url || null
+    data.image_id || null
   );
 }
 
@@ -139,3 +158,62 @@ export function createComment(data: {
   `);
   return stmt.run(data.problem_id, data.name, data.email, data.comment);
 }
+
+// --- Seed data ---
+
+function seedProblems() {
+  const count = db.prepare('SELECT COUNT(*) as count FROM problems').get() as { count: number };
+  if (count.count > 0) return;
+
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const seedDir = path.join(__dirname, 'seed-images');
+
+  function loadSeedImage(filename: string): number {
+    const filePath = path.join(seedDir, filename);
+    const data = fs.readFileSync(filePath);
+    const ext = path.extname(filename).toLowerCase();
+    const mimeType = ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg' : ext === '.png' ? 'image/png' : 'image/webp';
+    return insertImage(data, mimeType, filename);
+  }
+
+  const krieterImageId = loadSeedImage('krieterstrasse-elterntaxis.jpg');
+  const ngd1ImageId = loadSeedImage('ngd-vorher.jpg');
+  const ngd2ImageId = loadSeedImage('ngd-nachher.jpg');
+
+  const insertProblem = db.prepare(`
+    INSERT INTO problems (title, description, location_name, latitude, longitude, image_id, vision_image_id, is_approved)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+  `);
+
+  insertProblem.run(
+    'Fehlender Radweg am Niedergeorgswerder Deich',
+    'Die offizielle Radroute 23 am Niedergeorgswerder Deich hat keinen gekennzeichneten Radweg. Für Radfahrende – insbesondere Kinder – ist die Situation gefährlich.',
+    'Niedergeorgswerder Deich',
+    53.4912,
+    9.9989,
+    ngd1ImageId,
+    ngd2ImageId
+  );
+
+  insertProblem.run(
+    'Zugeparkter Gehweg Rahmwerder Straße',
+    'Regelmäßig parken Autos auf dem Gehweg vor der Schule. Kinder mit Ranzen müssen auf die Fahrbahn ausweichen.',
+    'Rahmwerder Straße, Höhe Elbinselschule',
+    53.4922,
+    10.0132,
+    krieterImageId,
+    null
+  );
+
+  insertProblem.run(
+    'Fehlender Zebrastreifen Krieterstraße',
+    'An der Kreuzung Krieterstraße fehlt ein gesicherter Übergang. Kinder müssen die stark befahrene Straße ohne jede Querungshilfe überqueren.',
+    'Krieterstraße, Höhe Elbinselschule',
+    53.4935,
+    10.0078,
+    krieterImageId,
+    null
+  );
+}
+
+seedProblems();

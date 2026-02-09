@@ -4,6 +4,9 @@ import Hero from '../components/Hero.astro';
 import PartnerLogos from '../components/PartnerLogos.astro';
 import SignalCTA from '../components/SignalCTA.astro';
 import BeforeAfterSlider from '../components/BeforeAfterSlider.tsx';
+import { getApprovedProblems } from '../lib/db';
+
+const showcase = getApprovedProblems().find(p => p.vision_image_id);
 ---
 <BaseLayout title="Sichere Schulwege Wilhelmsburg – Elterninitiative">
   <Hero />
@@ -23,21 +26,23 @@ import BeforeAfterSlider from '../components/BeforeAfterSlider.tsx';
   <SignalCTA />
 
   {/* Vorher/Nachher */}
-  <section class="py-12 md:py-16">
-    <div class="max-w-3xl mx-auto px-4">
-      <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">
-        So sieht es gerade aus – so könnte es aussehen.
-      </h2>
-      <BeforeAfterSlider
-        client:visible
-        beforeImage="/pictures/ngd-vorher.jpg"
-        afterImage="/pictures/ngd-nachher.jpg"
-      />
-      <div class="text-center mt-8">
-        <a href="/probleme" class="btn btn-primary btn-lg">
-          Alle Probleme ansehen &rarr;
-        </a>
+  {showcase && (
+    <section class="py-12 md:py-16">
+      <div class="max-w-3xl mx-auto px-4">
+        <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">
+          So sieht es gerade aus – so könnte es aussehen.
+        </h2>
+        <BeforeAfterSlider
+          client:visible
+          beforeImage={`/api/images/${showcase.image_id}?w=800&f=webp`}
+          afterImage={`/api/images/${showcase.vision_image_id}?w=800&f=webp`}
+        />
+        <div class="text-center mt-8">
+          <a href="/probleme" class="btn btn-primary btn-lg">
+            Alle Probleme ansehen &rarr;
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 </BaseLayout>

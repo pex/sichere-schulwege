@@ -34,9 +34,9 @@ const osmUrl = `https://www.openstreetmap.org/?mlat=${problem.latitude}&mlon=${p
         )}
       </div>
 
-      {problem.image_url && (
+      {problem.image_id && (
         <img
-          src={problem.image_url}
+          src={`/api/images/${problem.image_id}?w=800&f=webp`}
           alt={problem.title}
           class="w-full rounded-lg mb-8"
           loading="lazy"
@@ -47,13 +47,13 @@ const osmUrl = `https://www.openstreetmap.org/?mlat=${problem.latitude}&mlon=${p
         <p>{problem.description}</p>
       </div>
 
-      {problem.vision_image_url && (
+      {problem.vision_image_id && (
         <div class="mb-8">
           <h2 class="text-2xl font-bold mb-4">Vorher / Nachher</h2>
           <BeforeAfterSlider
             client:visible
-            beforeImage={problem.image_url || '/images/before-placeholder.svg'}
-            afterImage={problem.vision_image_url}
+            beforeImage={problem.image_id ? `/api/images/${problem.image_id}?w=800&f=webp` : '/images/placeholder.svg'}
+            afterImage={`/api/images/${problem.vision_image_id}?w=800&f=webp`}
           />
         </div>
       )}

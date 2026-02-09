@@ -36,6 +36,23 @@ export default function ProblemReportModal({ open = false }: Props) {
     const form = e.currentTarget as HTMLFormElement;
     const data = new FormData(form);
 
+    // Read file as base64 if present
+    const fileInput = form.querySelector<HTMLInputElement>('input[name="image_file"]');
+    const file = fileInput?.files?.[0];
+    let imageData: string | undefined;
+    let imageFilename: string | undefined;
+
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Bild darf maximal 5 MB groß sein.');
+        setLoading(false);
+        return;
+      }
+      const buffer = await file.arrayBuffer();
+      imageData = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+      imageFilename = file.name;
+    }
+
     try {
       const res = await fetch('/api/problems', {
         method: 'POST',
@@ -46,7 +63,8 @@ export default function ProblemReportModal({ open = false }: Props) {
           location_name: data.get('location_name'),
           latitude: data.get('latitude') || '0',
           longitude: data.get('longitude') || '0',
-          image_url: data.get('image_url') || '',
+          image_data: imageData,
+          image_filename: imageFilename,
         }),
       });
 
@@ -172,18 +190,18 @@ export default function ProblemReportModal({ open = false }: Props) {
                   Falls du die Koordinaten nicht kennst, lass die Felder leer.
                 </p>
                 <div class="form-control">
-                  <label class="label" for="image_url">
-                    <span class="label-text">Bild-URL</span>
+                  <label class="label" for="image_file">
+                    <span class="label-text">Foto</span>
                   </label>
                   <input
-                    type="url"
-                    name="image_url"
-                    id="image_url"
-                    class="input input-bordered w-full"
-                    placeholder="https://…"
+                    type="file"
+                    name="image_file"
+                    id="image_file"
+                    accept="image/*"
+                    class="file-input file-input-bordered w-full"
                   />
                   <label class="label">
-                    <span class="label-text-alt">Link zu einem Foto der Gefahrenstelle</span>
+                    <span class="label-text-alt">Foto der Gefahrenstelle (max. 5 MB)</span>
                   </label>
                 </div>
                 <div class="modal-action">
