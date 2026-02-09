@@ -18,7 +18,7 @@ const isProbleme = currentPath.startsWith("/probleme");
         href="/"
         aria-current={isHome ? "page" : undefined}
         class:list={[
-          "sm:px-3 py-2 rounded-md text-base transition-colors",
+          "px-3 py-2 rounded-md text-base transition-colors",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
           isHome
             ? "text-white bg-primary"
@@ -29,7 +29,7 @@ const isProbleme = currentPath.startsWith("/probleme");
         href="/probleme"
         aria-current={isProbleme ? "page" : undefined}
         class:list={[
-          "sm:px-3 py-2 rounded-md text-base transition-colors",
+          "px-3 py-2 rounded-md text-base transition-colors",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
           isProbleme
             ? "text-white bg-primary"
