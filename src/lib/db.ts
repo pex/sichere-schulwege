@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
+
 
 const dbPath = path.join(process.cwd(), 'data.db');
 const db = new Database(dbPath);
@@ -165,8 +165,7 @@ function seedProblems() {
   const count = db.prepare('SELECT COUNT(*) as count FROM problems').get() as { count: number };
   if (count.count > 0) return;
 
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const seedDir = path.join(__dirname, 'seed-images');
+  const seedDir = path.join(process.cwd(), 'src', 'lib', 'seed-images');
 
   function loadSeedImage(filename: string): number {
     const filePath = path.join(seedDir, filename);
