@@ -1,6 +1,0 @@
-<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
-  <rect width="800" height="600" fill="#e6f4ea"/>
-  <rect width="800" height="600" fill="none" stroke="#2E9E48" stroke-width="4"/>
-  <text x="400" y="280" text-anchor="middle" font-family="system-ui, sans-serif" font-size="36" font-weight="bold" fill="#2E9E48">Nachher</text>
-  <text x="400" y="330" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" fill="#2E9E48">So könnte es aussehen</text>
-</svg>
